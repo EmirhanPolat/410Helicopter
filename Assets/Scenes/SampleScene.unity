@@ -240,7 +240,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 162163885}
   serializedVersion: 2
-  m_Mass: 100
+  m_Mass: 120
   m_Drag: 1
   m_AngularDrag: 0.5
   m_UseGravity: 1
@@ -280,13 +280,15 @@ MonoBehaviour:
   TailBlade: {fileID: 1178053061}
   effectiveHeight: 100
   EngineLift: 0.075
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  isOnGround: 0
   ForwardForce: 10
   BackwardForce: 10
   TurnForce: 10
+  ForwardTiltForce: 10
+  TurnTiltForce: 10
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  isOnGround: 0
 --- !u!1 &359737938
 GameObject:
   m_ObjectHideFlags: 0

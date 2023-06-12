@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HeliEngine : MonoBehaviour
@@ -21,16 +19,23 @@ public class HeliEngine : MonoBehaviour
     public float effectiveHeight;
     public float EngineLift = 0.0075f;
 
+    public float ForwardForce;
+    public float BackwardForce;
+    public float TurnForce;
+    public float ForwardTiltForce;
+    public float TurnTiltForce;
+
+    private float turning = 0f;
+    private float TurnForceHelper = 1.5f;
+
     public LayerMask groundLayer;
     public bool isOnGround;
     private float distanceToGround;
 
-    private Vector2 movement = Vector2.zero;
-    public float ForwardForce;
-    public float BackwardForce;
-    public float TurnForce;
-    private float TurnForceHelper;
-    private float turning = 0f;
+
+    private Vector2 Movement = Vector2.zero;
+    private Vector2 TILTING = Vector2.zero;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -48,14 +53,15 @@ public class HeliEngine : MonoBehaviour
     {
         HelicopterHover();
         HelicopterMovements();
+        HelicopterTilting();
     }
 
     void HandleInputs()
     {
         if (!isOnGround)
         {
-            movement.x = Input.GetAxis("Horizontal");
-            movement.y = Input.GetAxis("Vertical");
+            Movement.x = Input.GetAxis("Horizontal");
+            Movement.y = Input.GetAxis("Vertical");
 
             if (Input.GetKey(KeyCode.LeftShift))
             {
@@ -71,7 +77,15 @@ public class HeliEngine : MonoBehaviour
         if (Input.GetAxis("Gas") > 0)
         {
             EnginePower += EngineLift;
-        } 
+        }
+        else if (Input.GetAxis("Vertical") > 0 && !isOnGround)
+        {
+            EnginePower = Mathf.Lerp(EnginePower, 17.5f, 0.003f);
+        }
+        else if (Input.GetAxis("Gas") < 0.5f && !isOnGround)
+        {
+            EnginePower = Mathf.Lerp(EnginePower, 10f, 0.003f);
+        }
 
     }
 
@@ -106,14 +120,30 @@ public class HeliEngine : MonoBehaviour
     {
         if (Input.GetAxis("Vertical") > 0)
         {
-            helicopterRigid.AddForce(Vector3.forward * Mathf.Max(0f, movement.y * ForwardForce * helicopterRigid.mass));
+            helicopterRigid.AddForce(Vector3.forward * Mathf.Max(0f, Movement.y * ForwardForce * helicopterRigid.mass));
         }
         else if (Input.GetAxis("Vertical") < 0)
         {
-            helicopterRigid.AddForce(Vector3.back * Mathf.Max(0f, -movement.y * BackwardForce * helicopterRigid.mass));
+            helicopterRigid.AddForce(Vector3.back * Mathf.Max(0f, -Movement.y * BackwardForce * helicopterRigid.mass));
         }
-        float turn = TurnForce * Mathf.Lerp(movement.y, movement.x * (TurnForceHelper - Mathf.Abs(movement.y)), Mathf.Max(0f,movement.y));
+
+        float turn = TurnForce * Mathf.Lerp(Movement.x, Movement.x * (TurnForceHelper - Mathf.Abs(Movement.y)), Mathf.Max(0f, Movement.y));
         turning = Mathf.Lerp(turning, turn, Time.fixedDeltaTime * TurnForce);
         helicopterRigid.AddRelativeTorque(0f, turning * helicopterRigid.mass, 0f);
+   
+        //else if (Input.GetAxis("Horizontal") < 0)
+        //{
+        //    float turn = TurnForce * Mathf.Lerp(movement.x, movement.x * (TurnForceHelper - Mathf.Abs(movement.y)), Mathf.Max(0f, movement.y));
+        //    turning = Mathf.Lerp(turning, turn, Time.fixedDeltaTime * TurnForce);
+        //    helicopterRigid.AddRelativeTorque(0f, -turning * helicopterRigid.mass, 0f);
+        //}
+
+    }
+
+    void HelicopterTilting()
+    {
+        TILTING.y = Mathf.Lerp(TILTING.y, Movement.y * ForwardTiltForce, Time.deltaTime);
+        TILTING.x = Mathf.Lerp(TILTING.x, Movement.x * TurnTiltForce, Time.deltaTime);
+        helicopterRigid.transform.localRotation = Quaternion.Euler(TILTING.y, helicopterRigid.transform.localEulerAngles.y, -TILTING.x);
     }
 }
