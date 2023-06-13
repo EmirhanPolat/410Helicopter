@@ -6,8 +6,9 @@ public class HeliEngine : MonoBehaviour
     Rigidbody helicopterRigid;
     public BladesController MainBlade;
     public BladesController TailBlade;
+    public ThrottleController throttleController;
 
-    private float enginePower;
+    public float enginePower;
     public float EnginePower
     {
         get { return enginePower; }
@@ -50,6 +51,7 @@ public class HeliEngine : MonoBehaviour
         HandleGroundCheck();
         HandleInputs();
         HandleEngine();
+        throttleController.SetThrottle(EnginePower);
     }
 
     protected void FixedUpdate()

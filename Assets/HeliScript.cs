@@ -5,9 +5,7 @@ using UnityEngine;
 public class HeliScript : MonoBehaviour
 {
     public int maxHealth = 100;
-    public int maxPower = 100;
     public int currentHealth;
-    public int currentPower;
 
     public HealthController healthController;
     private void Start()
@@ -16,18 +14,9 @@ public class HeliScript : MonoBehaviour
         healthController.SetMaxHealth(maxHealth);
     }
 
-    private void Update()
+    void OnCollisionEnter(Collision collision)
     {
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            TakeDamage(20);
-        }
-    }
-
-    void TakeDamage(int damage)
-    {
-        currentHealth -= damage;
-
+        currentHealth -= 20;
         healthController.SetHealth(currentHealth);
     }
 }
