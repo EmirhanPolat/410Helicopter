@@ -67,7 +67,7 @@ public class HeliEngine : MonoBehaviour
             {
                 EnginePower -= EngineLift;
 
-                if (EnginePower < 0)
+                if (!isOnGround && EnginePower < 7f)
                 {
                     EnginePower = 0;
                 }
@@ -120,24 +120,16 @@ public class HeliEngine : MonoBehaviour
     {
         if (Input.GetAxis("Vertical") > 0)
         {
-            helicopterRigid.AddForce(Vector3.forward * Mathf.Max(0f, Movement.y * ForwardForce * helicopterRigid.mass));
+            helicopterRigid.AddRelativeForce(Vector3.forward * Mathf.Max(0f, Movement.y * ForwardForce * helicopterRigid.mass));
         }
         else if (Input.GetAxis("Vertical") < 0)
         {
-            helicopterRigid.AddForce(Vector3.back * Mathf.Max(0f, -Movement.y * BackwardForce * helicopterRigid.mass));
+            helicopterRigid.AddRelativeForce(Vector3.back * Mathf.Max(0f, -Movement.y * BackwardForce * helicopterRigid.mass));
         }
 
         float turn = TurnForce * Mathf.Lerp(Movement.x, Movement.x * (TurnForceHelper - Mathf.Abs(Movement.y)), Mathf.Max(0f, Movement.y));
         turning = Mathf.Lerp(turning, turn, Time.fixedDeltaTime * TurnForce);
         helicopterRigid.AddRelativeTorque(0f, turning * helicopterRigid.mass, 0f);
-   
-        //else if (Input.GetAxis("Horizontal") < 0)
-        //{
-        //    float turn = TurnForce * Mathf.Lerp(movement.x, movement.x * (TurnForceHelper - Mathf.Abs(movement.y)), Mathf.Max(0f, movement.y));
-        //    turning = Mathf.Lerp(turning, turn, Time.fixedDeltaTime * TurnForce);
-        //    helicopterRigid.AddRelativeTorque(0f, -turning * helicopterRigid.mass, 0f);
-        //}
-
     }
 
     void HelicopterTilting()
