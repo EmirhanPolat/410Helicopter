@@ -4,55 +4,30 @@ using UnityEngine;
 
 public class HeliScript : MonoBehaviour
 {
-    private Rigidbody _rigidbody;
+    public int maxHealth = 100;
+    public int maxPower = 100;
+    public int currentHealth;
+    public int currentPower;
 
-    [SerializeField] private float responsiveness = 500f;
-    [SerializeField] private float gasAmount = 25f;
-    [SerializeField] private float rotorSpeedModifier = 10f;
-    [SerializeField] private Transform rotorTransform;
-    private float gas;
-
-    private float horizontal;
-    private float vertical;
-    private float diagonal;
-
-    private void Awake()
+    public HealthController healthController;
+    private void Start()
     {
-        _rigidbody = GetComponent<Rigidbody>();
+        currentHealth = maxHealth;
+        healthController.SetMaxHealth(maxHealth);
     }
 
     private void Update()
     {
-        HandeInputs();
-
-        rotorTransform.Rotate(Vector3.up * gas * rotorSpeedModifier);
-    }
-
-    private void FixedUpdate()
-    {
-        _rigidbody.AddForce(transform.up * gas, ForceMode.VelocityChange);
-
-        _rigidbody.AddTorque(transform.right * horizontal * responsiveness);
-        _rigidbody.AddTorque(transform.forward * vertical * responsiveness);
-        _rigidbody.AddTorque(transform.up * diagonal * responsiveness);
-    }
-
-    private void HandeInputs()
-    {
-        horizontal = Input.GetAxis("Vertical");
-        vertical = Input.GetAxis("Horizontal"); 
-        diagonal = Input.GetAxis("Diagonal");
-
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
-            gas += gasAmount * Time.deltaTime;
-        } else if (Input.GetKey(KeyCode.LeftShift))
-        {
-            gas -= gasAmount * Time.deltaTime;
+            TakeDamage(20);
         }
-        
+    }
 
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
 
-        gas = Mathf.Clamp(gas ,0f, 100f);
+        healthController.SetHealth(currentHealth);
     }
 }

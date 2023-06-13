@@ -1,4 +1,5 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class HeliEngine : MonoBehaviour
 {
@@ -17,6 +18,7 @@ public class HeliEngine : MonoBehaviour
     }
 
     public float effectiveHeight;
+    public float engineStartSpeed;
     public float EngineLift = 0.0075f;
 
     public float ForwardForce;
@@ -47,6 +49,7 @@ public class HeliEngine : MonoBehaviour
     {
         HandleGroundCheck();
         HandleInputs();
+        HandleEngine();
     }
 
     protected void FixedUpdate()
@@ -80,7 +83,7 @@ public class HeliEngine : MonoBehaviour
         }
         else if (Input.GetAxis("Vertical") > 0 && !isOnGround)
         {
-            EnginePower = Mathf.Lerp(EnginePower, 17.5f, 0.003f);
+            EnginePower = Mathf.Lerp(EnginePower, 12.5f, 0.003f);
         }
         else if (Input.GetAxis("Gas") < 0.5f && !isOnGround)
         {
@@ -109,6 +112,19 @@ public class HeliEngine : MonoBehaviour
             }
         }
     }
+
+    void HandleEngine()
+    {
+        if (Input.GetKeyDown(KeyCode.X) && isOnGround)
+        {
+            StartEngine();
+        } 
+        else if (Input.GetKeyDown(KeyCode.C) && isOnGround)
+        {
+            StopEngine();
+        }
+    }
+
     void HelicopterHover()
     {
         float upForce = 1 - Mathf.Clamp(helicopterRigid.transform.position.y / effectiveHeight, 0, 1);
@@ -138,4 +154,24 @@ public class HeliEngine : MonoBehaviour
         TILTING.x = Mathf.Lerp(TILTING.x, Movement.x * TurnTiltForce, Time.deltaTime);
         helicopterRigid.transform.localRotation = Quaternion.Euler(TILTING.y, helicopterRigid.transform.localEulerAngles.y, -TILTING.x);
     }
+
+    public void StartEngine()
+    {
+        DOTween.To(Starting, 0, 12.0f, engineStartSpeed);
+    }
+
+    void Starting(float value)
+    {
+        EnginePower = value;
+    }
+    public void StopEngine()
+    {
+        DOTween.To(Stopping, EnginePower, 0.0f, engineStartSpeed);
+    }
+
+    void Stopping(float value)
+    {
+        EnginePower = value;
+    }
+
 }
