@@ -1,18 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ThrottleController : MonoBehaviour
 {
-    // Start is called before the first frame update
+    public Slider slider;
+
+    public float maxThrottle = 100f;
+    public float currentThrottle;
+
     void Start()
     {
-        
+        SetMaxThrottle(maxThrottle);
+        currentThrottle = 0f;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    public void SetMaxThrottle(float throttle)
+    {
+        slider.maxValue = throttle;
+        slider.value = throttle;
+    }
+
+    public void SetThrottle(float throttle)
+    {
+        slider.value = throttle;
     }
 }

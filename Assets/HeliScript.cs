@@ -1,33 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HeliScript : MonoBehaviour
 {
     public int maxHealth = 100;
-    public int maxPower = 100;
     public int currentHealth;
-    public int currentPower;
 
     public HealthController healthController;
+
     private void Start()
     {
         currentHealth = maxHealth;
         healthController.SetMaxHealth(maxHealth);
     }
 
-    private void Update()
+    void OnCollisionEnter(Collision collision)
     {
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (!(collision.gameObject.tag == "pad"))
         {
-            TakeDamage(20);
+            currentHealth -= 20;
+            healthController.SetHealth(currentHealth);
+        }
+
+        if (currentHealth == 0)
+        {
+            StartCoroutine(LoadGameOverAfterDelay(2));
+        }
+
+        if ((collision.gameObject.name == "Plane (1)"))
+        {
+            StartCoroutine(LoadGameOverAfterDelay(2));
         }
     }
 
-    void TakeDamage(int damage)
+    IEnumerator LoadGameOverAfterDelay(float delay)
     {
-        currentHealth -= damage;
-
-        healthController.SetHealth(currentHealth);
+        yield return new WaitForSeconds(delay);
+        SceneManager.LoadScene("GameOver");
     }
 }
