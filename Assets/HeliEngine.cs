@@ -7,6 +7,7 @@ public class HeliEngine : MonoBehaviour
     public BladesController MainBlade;
     public BladesController TailBlade;
     public ThrottleController throttleController;
+    public AudioSource audio;
 
     public float enginePower;
     public float EnginePower
@@ -43,6 +44,7 @@ public class HeliEngine : MonoBehaviour
     void Start()
     {
         helicopterRigid = GetComponent<Rigidbody>();
+        
     }
 
     // Update is called once per frame
@@ -59,6 +61,10 @@ public class HeliEngine : MonoBehaviour
         HelicopterHover();
         HelicopterMovements();
         HelicopterTilting();
+        if(EnginePower > 0)
+        {
+            audio.volume += 1;
+        }
     }
 
     void HandleInputs()
